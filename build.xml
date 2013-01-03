@@ -1,0 +1,80 @@
+<project name="ss-common-ivy" xmlns:ivy="antlib:org.apache.ivy.ant" default="check-env">
+
+	<!-- Global project properties -->
+	<property name="gae.sdk" location="C:\my\soft\appengine-java-sdk-1.7.2.1" />
+	<property name="gwt.sdk" location="C:\my\soft\gwt-2.5.0" />
+	<property name="build.dir" value="${basedir}/build" />
+	<property name="classes.dir" value="${build.dir}/classes" />
+	<property name="lib.dir" value="${basedir}/lib" />
+	<property name="lib.sources.dir" value="${basedir}/lib-sources" />
+
+	<!-- Default properties file -->
+	<property file="${basedir}/build.properties" />
+
+	<!-- Setup Ivy -->
+	<property name="ivy.settings.dir" value="../ss-common-ivy" />
+	<property file="${ivy.settings.dir}/ivysettings.properties" />
+	<ivy:settings file="${ivy.settings.dir}/ivysettings.xml" />
+	<property name="ivy.local.cache.dir" value="${local.cache.dir}" />
+
+	<!-- Import ant tasks to work with GAE -->
+	<import file="${gae.sdk}/config/user/ant-macros.xml" />
+
+	<target name="check-env">
+		<echo>Checking environment for ss-common-ivy project...</echo>
+		<echo>GAE SDK: ${gae.sdk}</echo>
+		<echo>GWT SDK: ${gwt.sdk}</echo>
+		<echo>Java Home: ${java.home}</echo>
+		<echo>Build Dir: ${build.dir}</echo>
+		<echo>Classes dir: ${classes.dir}</echo>
+		<echo>Lib dir: ${lib.dir}</echo>
+		<echo>Lib sources dir: ${lib.sources.dir}</echo>
+		<echo>Ivy settings dir: ${ivy.settings.dir}</echo>
+		<echo>Ivy local cache dir: ${ivy.local.cache.dir}</echo>
+	</target>
+
+	<target name="clean-local-ivy-cache" description="Clean local ivy cache ${ivy.local.cache.dir}">
+		<delete dir="${ivy.local.cache.dir}" />
+	</target>
+
+	<target name="resolve" description="Resolves dependencies (client, compile) and copies them to ${lib.dir}">
+		<ivy:retrieve pattern="${lib.dir}/[artifact]-[revision].[ext]" conf="client,compile,master" overwritemode="always" />
+	</target>
+
+	<target name="resolve-sources" description="Resolves sources for dependencies and copies them to ${lib.sources.dir}">
+		<ivy:retrieve pattern="${lib.sources.dir}/[artifact]-[revision].[ext]" conf="sources" overwritemode="always" />
+	</target>
+
+	<target name="report" depends="resolve">
+		<ivy:report todir="report" />
+	</target>
+
+	<target name="clean" depends="check-env" description="Cleans build directory">
+		<delete dir="${build.dir}" />
+		<delete dir="${lib.sources.dir}" />
+	</target>
+
+	<target name="prepare-build-dir" depends="clean" description="Creates build dir ${build.dir} with subdirectories">
+		<mkdir dir="${build.dir}" />
+		<mkdir dir="${build.dir}/jar" />
+		<mkdir dir="${build.dir}/source" />
+		<mkdir dir="${classes.dir}" />
+	</target>
+
+	<path id="gwt.classpath">
+		<pathelement location="${gwt.sdk}/gwt-user.jar" />
+		<fileset dir="${gwt.sdk}" includes="gwt-dev*.jar" />
+	</path>
+
+	<target name="rem-project-from-local-ivy-cache" depends="resolve" description="Removes current project artifacts from local ivy cache">
+		<!--<echoproperties prefix="ivy."/>-->
+		<echo>About to remove: ${ivy.local.cache.dir}/${ivy.organisation}/${ivy.module}</echo>
+		<delete dir="${ivy.local.cache.dir}/${ivy.organisation}/${ivy.module}" />
+	</target>
+
+	<target name="ivy-publish-local" depends="rem-project-from-local-ivy-cache" description="Publish project to local repository using 'projects' resolver">
+		<delete file="${build.dir}/ivy.xml" />
+		<ivy:publish artifactspattern="${build.dir}/[type]/[artifact].[ext]" resolver="projects" pubrevision="${artifact.version}" status="release" overwrite="true" />
+	</target>
+
+</project>

@@ -1,0 +1,25 @@
+<ivysettings>	
+	
+	<properties file="${ivy.settings.dir}/ivysettings.properties" />
+	
+	<settings defaultResolver="libraries" />
+	
+	<caches>
+	   <cache name="ivy-cache" basedir="${ivy.cache.dir}"/>
+	   <cache name="local-cache" basedir="${local.cache.dir}"/>
+	</caches>
+	
+	<resolvers>
+		<filesystem name="projects" cache="local-cache">
+			<artifact pattern="${repository.dir}/[organisation]/[module]/[revision]/[type]s/[artifact].[ext]" />
+			<ivy pattern="${repository.dir}/[organisation]/[module]/[revision]/[type]s/[artifact].[ext]" />
+		</filesystem>
+		<ibiblio name="libraries" m2compatible="true" cache="ivy-cache" />
+	</resolvers>
+	
+	<modules>
+		<module organisation="com.ss" resolver="projects" />
+	</modules>		      
+	
+</ivysettings>
+
