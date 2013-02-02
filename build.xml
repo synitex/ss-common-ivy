@@ -1,8 +1,8 @@
 <project name="ss-common-ivy" xmlns:ivy="antlib:org.apache.ivy.ant" default="check-env">
 
 	<!-- Global project properties -->
-	<property name="gae.sdk" location="C:\my\soft\appengine-java-sdk-1.7.2.1" />
-	<property name="gwt.sdk" location="C:\my\soft\gwt-2.5.0" />
+	<property name="gae.sdk" location="D:\soft\appengine-java-sdk-1.7.4" />
+	<property name="gwt.sdk" location="D:\soft\gwt-2.5.0" />
 	<property name="build.dir" value="${basedir}/build" />
 	<property name="classes.dir" value="${build.dir}/classes" />
 	<property name="lib.dir" value="${basedir}/lib" />
